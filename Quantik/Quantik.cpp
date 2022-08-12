@@ -5,9 +5,10 @@
 #include "SDL.h"
 #include "Board.h"
 #include "init.h"
+#include "Color.h"
 #include "ctime"
 
-/*Player_board* other_player(Player_board* pPlayerboard) {
+/*Player* other_player(Player* pPlayerboard) {
     if (pPlayerboard == &playerboard1)
         return &playerboard2;
     else
@@ -15,8 +16,7 @@
 }*/
 
 int main(int argc, char* argv[])
-{
-    AI ai;
+{   
     std::srand(std::time(nullptr));
     app.initSDL();
     app.board.mapping();
@@ -26,8 +26,7 @@ int main(int argc, char* argv[])
     app.playerboard2.Player_board_init();
     app.playerboard1.player_mapping_1();
     app.playerboard2.player_mapping_2();
-    ai.player_type = PLAYER_1;
-    ai.board = app.board;
+    app.playerboard2.SetAI(true);
     do
     {
         black.SetDrawColor(app.renderer);
@@ -37,5 +36,6 @@ int main(int argc, char* argv[])
         app.Hilight(app.playerboard1, app.board);
         app.Hilight(app.playerboard2, app.board);
         SDL_RenderPresent(app.renderer);
-    } while (true);
+    }
+    while (true);
 }

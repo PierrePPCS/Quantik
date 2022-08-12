@@ -1,0 +1,18 @@
+#pragma once
+
+enum PieceType
+{
+	PIECE_NONE,
+	PIECE_TRIANGLE,
+	PIECE_CIRCLE,
+	PIECE_SQUARE,
+	PIECE_CYLINDER
+};
+
+enum PlayerType
+{
+	PLAYER_NONE,
+	PLAYER_1,
+	PLAYER_2
+};
+

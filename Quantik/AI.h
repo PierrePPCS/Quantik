@@ -1,12 +1,19 @@
 #pragma once
-#include "Board.h"
 
+#include "Coord.h"
 
+class Player;
 
 class AI
-{public:
-	PlayerType player_type;
-	Board board;
-	void play_dumb();
-	bool soon_to_win(int& i, int& j);
+{
+
+public:
+	AI(Player* _pPlayer) { pPlayer = _pPlayer; }
+	bool play_dumb();
+	bool soon_to_win(int& i, int& j, Player adversary);
+	Player* GetPlayer() { return (pPlayer); }
+private:
+	Player* pPlayer = nullptr;
+
+	
 };
