@@ -23,7 +23,7 @@ bool Board::is_available(int i, int j, PieceType piece_type, PlayerType player_t
 	GetLine(i, line);
 	GetColumn(j, colomn);
 	GetSquare(i, j, square);
-	return ((GetCell(i, j).m_Piece == PIECE_NONE) && (not is_in_vector(line, piece_type, get_other(player_type))) && (not is_in_vector(colomn, piece_type, get_other(player_type))) && (not is_in_vector(square, piece_type, get_other(player_type))));
+	return ((GetCell(i, j).m_Piece == PIECE_NONE) && (!is_in_vector(line, piece_type, get_other(player_type))) && (!is_in_vector(colomn, piece_type, get_other(player_type))) && (!is_in_vector(square, piece_type, get_other(player_type))));
 
 }
 
@@ -55,20 +55,24 @@ Cell Board::GetCell(int i, int j)
 }
 
 
-void Board::GetSquare(int i, int j, std::vector<Cell>& column)
+void Board::GetSquare(int i, int j, std::vector<Cell>& square)
 {
-	column.resize(BOARD_DIM);
+	square.resize(BOARD_DIM);
 	i = i / 2;
 	j = j / 2;
 	int indice = -1;
 	for (int k = 0; k < 2; k++)
 		for (int h = 0; h < 2; h++) {
 			indice++;
-			column[indice] = m_Cells[i*2 + k][j*2 + h];
+			square[indice] = m_Cells[i*2 + k][j*2 + h];
 		}
 
 }
 
+void Board::GetSquare(int k, std::vector<Cell>& square)
+{
+	GetSquare((k / 2) * 2, (k % 2) * 2, square);
+}
 
 
 void Board::mapping() {
@@ -140,4 +144,26 @@ void Board::available_cells(const Player& player, std::vector<CoordType>& availa
 }
 
 
+int Board::score(PlayerType player_type, std::vector<Cell> zone)
+{
+	int score = 0;
+	std::vector<bool> seen = { false,false,false,false };
+	for (int i = 0; i < BOARD_DIM; i++)
+	{
+		Cell c = zone[i];
+		if (player_type == get_other(c.m_Player))
+			return -1;
+		if (player_type == c.m_Player)
+		{
+			if (!seen[c.m_Piece - 1])
+			{
+				seen[c.m_Piece - 1] = true;
+				score++;
+			}
+			else
+				return -1;
+		}
 
+	}
+	return score;
+}

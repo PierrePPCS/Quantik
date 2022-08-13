@@ -1,5 +1,7 @@
 #include "Params.h"
+#include "App.h"
 #include "Player.h"
+#include "Board.h"
 
 Player::Player(Board *_pBoard)
 {
@@ -15,16 +17,19 @@ Player::~Player()
 	}
 }
 
-void Player::delete_piece(PieceType piece_type)
+bool Player::delete_piece(PieceType piece_type)
 {
 	for (int i = 0; i< BOARD_DIM * 2; i++)
 	{
-		if (playerboard[i].m_Piece == piece_type) {
+		if (playerboard[i].m_Piece == piece_type)
+		{
 			playerboard[i].m_Piece = PIECE_NONE;
-			break;
+			return true;
 		}
 	}
+	return false;
 }
+
 void Player::Player_board_init()
 {
 	playerboard.resize(BOARD_DIM * 2);
@@ -39,6 +44,8 @@ void Player::Player_board_init()
 	playerboard[3].m_Piece = PIECE_CYLINDER;
 	playerboard[7].m_Piece = PIECE_CYLINDER;
 }
+
+
 
 void Player::player_mapping_1()
 {
@@ -115,3 +122,13 @@ bool Player::is_in_playerboard(int x, int y, int& icell) const
 	return false;
 }
 
+bool Player::play(int i, int j, PieceType piece_type)
+{
+	if (!delete_piece(piece_type))
+		return false;
+	Cell& c = GetBoard()->m_Cells[i][j];
+	c.m_Player = player_type;
+	c.m_Piece = piece_type;
+	app.check_victory();
+	return true;
+}

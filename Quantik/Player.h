@@ -24,7 +24,8 @@ public:
 	bool is_in_playerboard(int x, int y, int& icell) const;
 	void SetBoard(Board* _pBoard) { pBoard = _pBoard; }
 	Board* GetBoard() { return pBoard; }
-	void delete_piece(PieceType piece_type);
+	bool delete_piece(PieceType piece_type);
+	bool play(int i, int j, PieceType piece_type);
 private:
 	Board* pBoard = nullptr;
 

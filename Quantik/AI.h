@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Coord.h"
+#include <algorithm>
+#include "Utils.h"
 
 class Player;
 
@@ -12,8 +14,11 @@ public:
 	bool play_dumb();
 	bool soon_to_win(int& i, int& j, Player adversary);
 	Player* GetPlayer() { return (pPlayer); }
+	bool playsmart();
 private:
 	Player* pPlayer = nullptr;
+	
 
 	
 };
+

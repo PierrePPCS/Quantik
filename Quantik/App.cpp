@@ -2,14 +2,25 @@
 #include "Color.h"
 #include "Utils.h"
 
+APP app;
+
 APP::APP()
 {
 	dragged_source_cell = -1;
-	playerboard1.SetBoard(&board);
-	playerboard2.SetBoard(&board);
+	player1.SetBoard(&board);
+	player2.SetBoard(&board);
 }
 
-bool APP::check_victory(int i, int j)
+Player& APP::current_player()
+{
+	if (current_player_type == PLAYER_1)
+		return player1;
+	else
+		return player2;
+
+}
+
+bool APP::check_local_victory(int i,int j)
 {
 	std::vector<Cell> square;
 	board.GetSquare(i, j, square);
@@ -17,14 +28,22 @@ bool APP::check_victory(int i, int j)
 	std::vector<Cell> colomn;
 	board.GetLine(i, line);
 	board.GetColumn(j, colomn);
-	if (is_in_vector(line, PIECE_CIRCLE, current_player) && is_in_vector(line, PIECE_CYLINDER, current_player) && is_in_vector(line, PIECE_SQUARE, current_player) && is_in_vector(line, PIECE_TRIANGLE, current_player))
+	if (is_in_vector(line, PIECE_CIRCLE, current_player_type) && is_in_vector(line, PIECE_CYLINDER, current_player_type) && is_in_vector(line, PIECE_SQUARE, current_player_type) && is_in_vector(line, PIECE_TRIANGLE, current_player_type))
 		return true;
-	if (is_in_vector(colomn, PIECE_CIRCLE, current_player) && is_in_vector(colomn, PIECE_CYLINDER, current_player) && is_in_vector(colomn, PIECE_SQUARE, current_player) && is_in_vector(colomn, PIECE_TRIANGLE, current_player))
+	if (is_in_vector(colomn, PIECE_CIRCLE, current_player_type) && is_in_vector(colomn, PIECE_CYLINDER, current_player_type) && is_in_vector(colomn, PIECE_SQUARE, current_player_type) && is_in_vector(colomn, PIECE_TRIANGLE, current_player_type))
 		return true;
-	if (is_in_vector(square, PIECE_CIRCLE, current_player) && is_in_vector(square, PIECE_CYLINDER, current_player) && is_in_vector(square, PIECE_SQUARE, current_player) && is_in_vector(square, PIECE_TRIANGLE, current_player))
+	if (is_in_vector(square, PIECE_CIRCLE, current_player_type) && is_in_vector(square, PIECE_CYLINDER, current_player_type) && is_in_vector(square, PIECE_SQUARE, current_player_type) && is_in_vector(square, PIECE_TRIANGLE, current_player_type))
 		return true;
 	return false;
 }
+
+
+void APP::check_victory() {
+
+	if (check_local_victory(0, 0) || check_local_victory(3, 1) || check_local_victory(2, 2) || check_local_victory(1, 3))
+		victory = current_player_type;
+}
+
 
 void draw_highlight(const Cell& C, const APP& app)
 {
@@ -98,10 +117,10 @@ void APP::initSDL()
 
 void APP::other_player()
 {
-	if (current_player == PLAYER_1)
-		current_player = PLAYER_2;
+	if (current_player_type == PLAYER_1)
+		current_player_type = PLAYER_2;
 	else
-		current_player = PLAYER_1;
+		current_player_type = PLAYER_1;
 
 
 }
@@ -112,10 +131,13 @@ void APP::doInput()
 	SDL_Event event;
 	int cell;
 
-	if (current_playerboard().IsAI())
+	if (current_player().IsAI())
 	{
-		if (!current_playerboard().ai->play_dumb())
+		if (!current_player().ai->playsmart())
+		{
 			printf("L'IA ne peut pas jouer !!!\n");
+			app.victory = -1;
+		}
 		other_player();
 		return;
 	}
@@ -132,7 +154,7 @@ void APP::doInput()
 		case SDL_MOUSEBUTTONDOWN:
 			if (event.button.button == SDL_BUTTON_LEFT) {
 				button = SDL_GetMouseState(&mouse_x, &mouse_y);
-				if (current_playerboard().is_in_playerboard(mouse_x, mouse_y, cell) && current_playerboard().playerboard[cell].m_Piece != PIECE_NONE)
+				if (current_player().is_in_playerboard(mouse_x, mouse_y, cell) && current_player().playerboard[cell].m_Piece != PIECE_NONE)
 				{
 					dragged_source_cell = cell;
 				}
@@ -146,22 +168,15 @@ void APP::doInput()
 				int j;
 				if (board.is_in_board(mouse_x, mouse_y, i, j) && IsDragging())
 				{
-					PieceType dragged_piece = current_playerboard().playerboard[dragged_source_cell].m_Piece;
-					if (board.is_available(i, j, dragged_piece, current_player))
+					PieceType dragged_piece = current_player().playerboard[dragged_source_cell].m_Piece;
+					if (board.is_available(i, j, dragged_piece, current_player_type))
 					{
-						board.change_cell(i, j, current_playerboard().playerboard[dragged_source_cell].m_Piece, current_player);
-						current_playerboard().playerboard[dragged_source_cell].m_Piece = PIECE_NONE;
+						board.change_cell(i, j, current_player().playerboard[dragged_source_cell].m_Piece, current_player_type);
+						current_player().playerboard[dragged_source_cell].m_Piece = PIECE_NONE;
 						dragged_source_cell = -1;
-						if (check_victory(i, j))
-							printf("v");
 						other_player();
 					}
 				}
-				PieceType pice;
-				int k;
-				int l;
-				if (soon_to_win(pice, k, l, PLAYER_1))
-					printf("Bientôt gagné");
 			}
 			break;
 		}
@@ -225,13 +240,14 @@ void APP::draw()
 		}
 	}
 	for (int i = 0; i < BOARD_DIM * 2; i++) {
-		Cell cell = playerboard1.playerboard[i];
+		Cell cell = player1.playerboard[i];
 		PieceType piece_type = cell.m_Piece;
 		if (cell.m_Player == PLAYER_1)
 			blue.SetDrawColor(renderer);
 		else
 			red.SetDrawColor(renderer);
-		switch (piece_type) {
+		switch (piece_type)
+		{
 		case PIECE_TRIANGLE:
 			draw_triangle(renderer, cell.coord_x, cell.coord_x + 100, cell.coord_y, cell.coord_y + 100);
 			break;
@@ -248,7 +264,7 @@ void APP::draw()
 
 	}
 	for (int i = 0; i < BOARD_DIM * 2; i++) {
-		Cell cell = playerboard2.playerboard[i];
+		Cell cell = player2.playerboard[i];
 		PieceType piece_type = cell.m_Piece;
 		if (cell.m_Player == PLAYER_1)
 			blue.SetDrawColor(renderer);
@@ -273,43 +289,7 @@ void APP::draw()
 }
 
 
-bool APP::soon_to_win(PieceType& final_piece, int& i, int& j, PlayerType current_player)
-{
-	std::vector<CoordType> available;
-	board.available_cells(playerboard2, available);
-	int k = available.size();
-	for (int _i = 0; _i < k; _i++) {
-		std::vector<Cell> Line;
-		std::vector<Cell> Column;
-		std::vector<Cell> Square;
-		PieceType piece_type = available[_i].piece_type;
-		board.GetLine(available[_i].i, Line);
-		board.GetColumn(available[_i].j, Column);
-		board.GetSquare(available[_i].j, available[_i].j, Square);
-		suppr(Line, piece_type, current_player);
-		suppr(Column, piece_type, current_player);
-		suppr(Square, piece_type, current_player);
-		if (Line.size() == 1) {
-			i = available[_i].i;
-			j = available[_i].j;
-			final_piece = Line[0].m_Piece;
-			return true;
-		}
-		if (Column.size() == 1) {
-			i = available[_i].i;
-			j = available[_i].j;
-			final_piece = Column[0].m_Piece;
-			return true;
-		}
-		if (Square.size() == 1) {
-			i = available[_i].i;
-			j = available[_i].j;
-			final_piece = Square[0].m_Piece;
-			return true;
-		}
-	}
-	return false;
-}
+
 
 
 

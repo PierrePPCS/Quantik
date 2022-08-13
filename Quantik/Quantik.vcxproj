@@ -138,7 +138,6 @@
     <ClCompile Include="board.cpp" />
     <ClCompile Include="Cell.cpp" />
     <ClCompile Include="Color.cpp" />
-    <ClCompile Include="init.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Quantik.cpp" />
     <ClCompile Include="Draw.cpp" />
@@ -153,7 +152,6 @@
     <ClInclude Include="Coord.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Fonctions_secondaires.h" />
-    <ClInclude Include="init.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Utils.h" />

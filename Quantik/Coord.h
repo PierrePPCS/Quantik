@@ -17,3 +17,9 @@ struct CoordType :public Coord
 	CoordType(Coord& coord, PieceType _piece_type) { i = coord.i; j = coord.j; piece_type = _piece_type; }
 };
 
+struct CoordScore :public CoordType
+{
+	int Score;
+	CoordScore() { Score = 0; }
+	CoordScore(CoordType& coord, int _Score) { i = coord.i; j = coord.j; piece_type = coord.piece_type; Score = _Score; }
+};

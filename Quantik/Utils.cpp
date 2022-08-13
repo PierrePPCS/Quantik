@@ -85,11 +85,33 @@ int draw_circle(SDL_Renderer* renderer, int x, int y, int radius)
 
 
 
-void suppr(std::vector<Cell>& vector, PieceType piece_type, PlayerType player_type) {
-	for (int i = 0; i < vector.size(); i++)
+void suppr(std::vector<Cell> zone,std::vector<Cell>& vector, PieceType piece_type, PlayerType player_type)
+{
+	for (int i = 0; i < BOARD_DIM; i++)
 	{
-		if (!(vector[i].m_Piece == piece_type)&&(vector[i].m_Player==get_other(player_type)))
-			vector.push_back(vector[i]);
+		if (!(zone[i].m_Piece == piece_type)&&(zone[i].m_Player==get_other(player_type)))
+			vector.push_back(zone[i]);
 	}
 
 }
+
+
+void sort_coordscore(std::vector<CoordScore>& scores)
+{
+	int k = scores.size();
+	for (int i = 0; i < k; i++)
+	{
+		for (int j = i+1; j < k; j++)
+		{
+			if (scores[i].Score < scores[j].Score)
+			{
+				CoordScore temp = scores[i];
+				scores[i] = scores[j];
+				scores[j] = temp;
+			}
+		}
+	}
+
+}
+
+
