@@ -102,12 +102,6 @@ bool Board::is_in_board(int x, int y, int& i, int& j)
 	return false;
 }
 
-void Board::change_cell(int i, int j, PieceType piece_type, PlayerType player_type)
-{
-	m_Cells[i][j].m_Player = player_type;
-	m_Cells[i][j].m_Piece = piece_type;
-}
-
 void Board::available_cells_by_type(PlayerType player_type,PieceType piece_type, std::vector<Coord>& available)
 {
 	std::vector<std::vector<bool>> vector;

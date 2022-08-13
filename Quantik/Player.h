@@ -26,6 +26,7 @@ public:
 	Board* GetBoard() { return pBoard; }
 	bool delete_piece(PieceType piece_type);
 	bool play(int i, int j, PieceType piece_type);
+	bool play(int i, int j, int dragged_piece);
 private:
 	Board* pBoard = nullptr;
 

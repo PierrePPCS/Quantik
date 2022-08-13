@@ -135,10 +135,18 @@ void APP::doInput()
 	{
 		if (!current_player().ai->playsmart())
 		{
-			printf("L'IA ne peut pas jouer !!!\n");
+			printf("Player %d (AI) has no move available !!!\n", current_player_type);
 			app.victory = -1;
 		}
 		other_player();
+		return;
+	}
+	std::vector<CoordType> available;
+	board.available_cells(current_player(), available);
+	if (available.size() == 0)
+	{
+		printf("Player %d has no move available !!!\n", current_player_type);
+		app.victory = -1;
 		return;
 	}
 	while (SDL_PollEvent(&event))
@@ -171,8 +179,7 @@ void APP::doInput()
 					PieceType dragged_piece = current_player().playerboard[dragged_source_cell].m_Piece;
 					if (board.is_available(i, j, dragged_piece, current_player_type))
 					{
-						board.change_cell(i, j, current_player().playerboard[dragged_source_cell].m_Piece, current_player_type);
-						current_player().playerboard[dragged_source_cell].m_Piece = PIECE_NONE;
+						current_player().play(i, j, dragged_source_cell);
 						dragged_source_cell = -1;
 						other_player();
 					}

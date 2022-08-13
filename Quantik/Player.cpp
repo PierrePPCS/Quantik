@@ -132,3 +132,15 @@ bool Player::play(int i, int j, PieceType piece_type)
 	app.check_victory();
 	return true;
 }
+
+bool Player::play(int i, int j, int dragged_piece)
+{
+	Cell& pc = playerboard[dragged_piece];
+	Cell& c = GetBoard()->m_Cells[i][j];
+	c.m_Player = player_type;
+	c.m_Piece = pc.m_Piece;
+	pc.m_Piece = PIECE_NONE;
+	app.check_victory();
+	return true;
+
+}

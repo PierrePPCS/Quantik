@@ -21,7 +21,6 @@ public:
 	Cell GetCell(int i, int j);
 	void mapping();
 	bool is_in_board(int x, int y, int& i, int& j);
-	void change_cell(int i, int j, PieceType piece_type, PlayerType player_type);
 	bool is_available(int i, int j, PieceType piece_type, PlayerType player_type);
 	void available_cells_by_type(PlayerType player_type, PieceType piece_type, std::vector<Coord>& available);
 	void available_cells(const Player& player, std::vector<CoordType>& available);
