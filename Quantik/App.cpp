@@ -121,10 +121,14 @@ void APP::other_player()
 		current_player_type = PLAYER_2;
 	else
 		current_player_type = PLAYER_1;
-
-
 }
 
+const Player& APP::GetOpponent(PlayerType player_type)
+{
+	if (player_type == PLAYER_1)
+		return player2;
+	return player1;
+}
 
 void APP::doInput()
 {
@@ -294,7 +298,6 @@ void APP::draw()
 
 	}
 }
-
 
 
 

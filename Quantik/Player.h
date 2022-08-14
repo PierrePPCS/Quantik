@@ -23,10 +23,11 @@ public:
 	bool IsAI() { return ai != nullptr; }
 	bool is_in_playerboard(int x, int y, int& icell) const;
 	void SetBoard(Board* _pBoard) { pBoard = _pBoard; }
-	Board* GetBoard() { return pBoard; }
+	Board* GetBoard() const { return pBoard; }
 	bool delete_piece(PieceType piece_type);
 	bool play(int i, int j, PieceType piece_type);
 	bool play(int i, int j, int dragged_piece);
+	const Player& GetOpponent();
 private:
 	Board* pBoard = nullptr;
 

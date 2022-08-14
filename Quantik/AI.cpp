@@ -30,6 +30,7 @@ bool AI::playsmart()
 	printf("IA: %zi moves available\n", available.size());
 	if (available.size() == 0)
 		return false;
+	CoordScore adversary = best_adversary_score();
 	for (int k = 0; k < available.size(); k++)
 	{
 		std::vector<Cell> Line;
@@ -50,7 +51,45 @@ bool AI::playsmart()
 
 
 	}
+	PieceType final_piece;
 	sort_coordscore(scores);
 	CoordScore& next_move = scores[0];
-	return GetPlayer()->play(next_move.i, next_move.j, next_move.piece_type);
+	if (next_move.Score>adversary.Score)
+		return GetPlayer()->play(next_move.i, next_move.j, next_move.piece_type);
+	else if (GetPlayer()->GetBoard()->is_available_anytype(adversary.i, adversary.j, final_piece, GetPlayer()->player_type ))
+		return GetPlayer()->play(adversary.i, adversary.j, final_piece);
+	else 
+		return GetPlayer()->play(next_move.i, next_move.j, next_move.piece_type);
+}
+
+
+CoordScore AI::best_adversary_score()
+{
+	std::vector<CoordScore> scores;
+	std::vector<CoordType> available;
+	const Player& Opponent = GetPlayer()->GetOpponent();
+	Board* pBoard = Opponent.GetBoard();
+	pBoard->available_cells(Opponent, available);
+	for (int k = 0; k < available.size(); k++)
+	{
+		std::vector<Cell> Line;
+		std::vector<Cell> Column;
+		std::vector<Cell> Square;
+		Cell& c = pBoard->m_Cells[available[k].i][available[k].j];
+		c.m_Piece = available[k].piece_type;
+		c.m_Player = Opponent.player_type;
+		pBoard->GetSquare(available[k].i, available[k].j, Square);
+		pBoard->GetLine(available[k].i, Line);
+		pBoard->GetColumn(available[k].j, Column);
+		int max = std::max(std::max(GetPlayer()->GetBoard()->score(Opponent.player_type, Line),GetPlayer()->GetBoard()->score(Opponent.player_type, Column)), GetPlayer()->GetBoard()->score(Opponent.player_type, Square));
+		c.m_Piece = PIECE_NONE;
+		c.m_Player = PLAYER_NONE;
+		Coord co(available[k].i, available[k].j);
+		CoordType c_t(co, available[k].piece_type);
+		scores.push_back(CoordScore(c_t, max));
+
+	}
+	sort_coordscore(scores);
+	return scores[0];
+
 }

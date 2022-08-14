@@ -25,6 +25,7 @@ public:
 	void available_cells_by_type(PlayerType player_type, PieceType piece_type, std::vector<Coord>& available);
 	void available_cells(const Player& player, std::vector<CoordType>& available);
 	int score(PlayerType player_type,std::vector<Cell> zone);
+	bool is_available_anytype(int i, int j, PieceType& piece_type, PlayerType player_type);
 };
 
 

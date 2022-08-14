@@ -144,3 +144,8 @@ bool Player::play(int i, int j, int dragged_piece)
 	return true;
 
 }
+
+const Player& Player::GetOpponent()
+{
+	return app.GetOpponent(player_type);
+}

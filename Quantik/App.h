@@ -28,12 +28,12 @@ public:
 	void doInput();
 	void draw_Pieces();
 	void other_player();
+	const Player& GetOpponent(PlayerType player_type);
 	void Hilight(const Player& player_board, const Board& board);
 	void draw();
 	bool check_local_victory(int i, int j);
 	void check_victory();
 	Player& current_player();
-
 };
 
 extern APP app;

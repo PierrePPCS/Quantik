@@ -2,6 +2,7 @@
 #include "AI.h"
 #include "Utils.h"
 #include "Player.h"
+#include "App.h"
 
 
 bool is_in_vector(std::vector<Cell> vector, PieceType piece_type, PlayerType player_type)
@@ -160,4 +161,20 @@ int Board::score(PlayerType player_type, std::vector<Cell> zone)
 
 	}
 	return score;
+}
+
+
+bool Board::is_available_anytype(int i, int j, PieceType& piece_type, PlayerType player_type)
+{	
+	std::vector<Cell> playerboard;
+	if (player_type == PLAYER_1)
+		playerboard = app.player1.playerboard;
+	if (player_type == PLAYER_2)
+		playerboard = app.player2.playerboard;
+	for (int k = PIECE_TRIANGLE; k <= PIECE_CYLINDER; k++)
+		if (is_available(i, j, (PieceType)k, player_type)&&is_in_vector(playerboard,(PieceType)k,player_type)) {
+			piece_type = (PieceType)k;
+			return true;
+		}
+	return false;
 }
